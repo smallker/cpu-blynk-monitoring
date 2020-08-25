@@ -14,3 +14,8 @@ C:\Users\Wahyu\Github\cpu-blynk-monitoring\vs2019\ConsoleApplication1\obj\Debug\
 C:\Users\Wahyu\Github\cpu-blynk-monitoring\vs2019\ConsoleApplication1\obj\Debug\CPU Monitoring.csproj.CopyComplete
 C:\Users\Wahyu\Github\cpu-blynk-monitoring\vs2019\ConsoleApplication1\obj\Debug\ConsoleApplication1.exe
 C:\Users\Wahyu\Github\cpu-blynk-monitoring\vs2019\ConsoleApplication1\obj\Debug\ConsoleApplication1.pdb
+C:\Users\Wahyu\Github\cpu-blynk-monitoring\vs2019\ConsoleApplication1\obj\Debug\ConsoleApplication1.TrustInfo.xml
+C:\Users\Wahyu\Github\cpu-blynk-monitoring\vs2019\ConsoleApplication1\obj\Debug\ConsoleApplication1.exe.manifest
+C:\Users\Wahyu\Github\cpu-blynk-monitoring\vs2019\ConsoleApplication1\bin\Debug\ConsoleApplication1.exe.manifest
+C:\Users\Wahyu\Github\cpu-blynk-monitoring\vs2019\ConsoleApplication1\bin\Debug\ConsoleApplication1.application
+C:\Users\Wahyu\Github\cpu-blynk-monitoring\vs2019\ConsoleApplication1\obj\Debug\ConsoleApplication1.application
