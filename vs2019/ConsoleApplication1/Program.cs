@@ -34,17 +34,18 @@ namespace Get_CPU_Temp5
             computer.Open();
             computer.CPUEnabled = true;
             computer.Accept(updateVisitor);
-            for (int i = 0; i < computer.Hardware.Length; i++)
+            foreach (IHardware v in computer.Hardware)
             {
 
-                if (computer.Hardware[i].HardwareType == HardwareType.CPU)
+                if (v.HardwareType != HardwareType.CPU)
                 {
-                    for (int j = 0; j < computer.Hardware[i].Sensors.Length; j++)
-                    {
-                        if (computer.Hardware[i].Sensors[j].SensorType == SensorType.Temperature)
-                            return int.Parse(computer.Hardware[i].Sensors[j].Value.ToString());
-                        //Console.WriteLine("Temp => "+computer.Hardware[i].Sensors[j].Name + ":" + computer.Hardware[i].Sensors[j].Value.ToString() + "\r");
-                    }
+                    continue;
+                }
+                for (int j = 0; j < v.Sensors.Length; j++)
+                {
+                    if (v.Sensors[j].SensorType == SensorType.Temperature)
+                        return int.Parse(v.Sensors[j].Value.ToString());
+                    //Console.WriteLine("Temp => "+computer.Hardware[i].Sensors[j].Name + ":" + computer.Hardware[i].Sensors[j].Value.ToString() + "\r");
                 }
             }
             computer.Close();
@@ -81,40 +82,66 @@ namespace Get_CPU_Temp5
         }
         static void Main(string[] args)
         {
+        start:
+            string[] ports = SerialPort.GetPortNames();
+            Console.WriteLine("Port tersedia :");
+            // Display each port name to the console.
+            foreach (string port in ports)
+            {
+                Console.WriteLine(port);
+            }
+            Console.Write("Masukkan nama port (ex COM9) : ");
+            String comPort = Console.ReadLine();
             PerformanceCounter cpuCounter;
             //PerformanceCounter ramCounter;
             SerialPort _serialPort;
             cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
             //ramCounter = new PerformanceCounter("Memory", "Available MBytes");
             _serialPort = new SerialPort();
-            _serialPort.PortName = "COM9";
+            _serialPort.PortName = comPort;
             _serialPort.BaudRate = 9600;
-            _serialPort.Open();
-            while (true)
+            try
             {
-                int temperature = GetSystemInfo();
-                int cpuLoad = (int)cpuCounter.NextValue();
-                string cmd = _serialPort.ReadExisting();
-                string date = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
-                Console.WriteLine("\r\n\r\n");
-                Console.WriteLine(date);
-                Console.WriteLine("Temp         : " + GetSystemInfo());
-                Console.WriteLine("CPU Usage    : " + cpuLoad + "%");
-                if (cmd.Contains("a"))
+                _serialPort.Open();
+            }
+            catch
+            {
+                Console.WriteLine("Port tidak tersedia\r\n");
+                goto start;
+            }
+
+            try
+            {
+                while (true)
                 {
-                    Console.WriteLine("Command Shutdown Received");
-                    Shutdown();
-                    break;
+                    int temperature = GetSystemInfo();
+                    int cpuLoad = (int)cpuCounter.NextValue();
+                    string cmd = _serialPort.ReadExisting();
+                    string date = DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss");
+                    Console.WriteLine("\r\n\r\n");
+                    Console.WriteLine(date);
+                    Console.WriteLine("Suhu CPU         : " + GetSystemInfo() + " °C");
+                    Console.WriteLine("Penggunaan CPU   : " + cpuLoad + " %");
+                    if (cmd.Contains("a"))
+                    {
+                        Console.WriteLine(">>>>>>>> Komputer akan dimatikan <<<<<<<<<<<");
+                        Shutdown();
+                        break;
+                    }
+                    if (cmd.Contains("b"))
+                    {
+                        Console.WriteLine(">>>>>> Komputer akan restart <<<<<<<<<");
+                        Restart();
+                        break;
+                    }
+                    _serialPort.Write("{\"load\":" + cpuLoad.ToString() + ",\"temp\":" + temperature.ToString() + "}");
+                    _serialPort.Write("\n");
+                    Thread.Sleep(500);
                 }
-                if (cmd.Contains("b"))
-                {
-                    Console.WriteLine("Command Restart Received");
-                    Restart();
-                    break;
-                }
-                _serialPort.Write("{\"load\":" + cpuLoad.ToString() + ",\"temp\":" + temperature.ToString() + "}");
-                _serialPort.Write("\n");
-                Thread.Sleep(500);
+            }
+            catch
+            {
+                Console.WriteLine("Restart program dan jalankan sebagai administrator");
             }
             while (true)
             {
