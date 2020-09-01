@@ -110,39 +110,41 @@ namespace Get_CPU_Temp5
                 goto start;
             }
 
-            try
-            {
+            //try
+            //{
                 while (true)
                 {
                     int temperature = GetSystemInfo();
                     int cpuLoad = (int)cpuCounter.NextValue();
                     string cmd = _serialPort.ReadExisting();
-                    string date = DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss");
+                    string time = DateTime.Now.ToString("hh:mm:ss");
                     Console.WriteLine("\r\n\r\n");
-                    Console.WriteLine(date);
+                    Console.WriteLine(time);
                     Console.WriteLine("Suhu CPU         : " + GetSystemInfo() + " °C");
                     Console.WriteLine("Penggunaan CPU   : " + cpuLoad + " %");
-                    if (cmd.Contains("a"))
-                    {
-                        Console.WriteLine(">>>>>>>> Komputer akan dimatikan <<<<<<<<<<<");
-                        Shutdown();
-                        break;
-                    }
-                    if (cmd.Contains("b"))
-                    {
-                        Console.WriteLine(">>>>>> Komputer akan restart <<<<<<<<<");
-                        Restart();
-                        break;
-                    }
-                    _serialPort.Write("{\"load\":" + cpuLoad.ToString() + ",\"temp\":" + temperature.ToString() + "}");
-                    _serialPort.Write("\n");
+                if (cmd.Contains("a"))
+                {
+                    Console.WriteLine(">>>>>>>> Komputer akan dimatikan <<<<<<<<<<<");
+                    Shutdown();
+                    break;
+                }
+                if (cmd.Contains("b"))
+                {
+                    Console.WriteLine(">>>>>> Komputer akan restart <<<<<<<<<");
+                    Restart();
+                    break;
+                }
+
+                _serialPort.Write("{\"load\":" + cpuLoad.ToString() + ",\"temp\":" + temperature.ToString() + ",\"time\":\""+time+"\"}");
+                _serialPort.Write("\n");
+                Console.WriteLine(cmd);
                     Thread.Sleep(500);
                 }
-            }
-            catch
-            {
-                Console.WriteLine("Restart program dan jalankan sebagai administrator");
-            }
+            //}
+            //catch
+            //{
+            //    Console.WriteLine("Restart program dan jalankan sebagai administrator");
+            //}
             while (true)
             {
                 Thread.Sleep(500);

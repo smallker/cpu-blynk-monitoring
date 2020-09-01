@@ -13,6 +13,7 @@ char ssid[] = "y";
 char pass[] = "11111111";
 
 BlynkTimer timer;
+WidgetLCD blynkLcd(V4);
 LiquidCrystal_I2C lcd(0x27,16,2);
 BLYNK_WRITE(V2)
 {
@@ -31,6 +32,7 @@ void myTimerEvent()
     deserializeJson(output, data);
     int load = output["load"];
     int temp = output["temp"];
+    String time = output["time"];
     lcd.clear();
     lcd.setCursor(0,0);
     lcd.print("Suhu     : "+(String)temp+"C");
@@ -38,8 +40,10 @@ void myTimerEvent()
     lcd.print("CPU Load : "+(String)load+"%");
     Blynk.virtualWrite(V0,load);
     Blynk.virtualWrite(V1,temp);
-
+    blynkLcd.print(0,0,"LAST DATA");
+    blynkLcd.print(0,1,time);
     if(temp>batasSuhu){
+      Blynk.notify("Suhu mencapai "+(String)batasSuhu+" C");
       digitalWrite(fanPin,HIGH);
     }
     else digitalWrite(fanPin,LOW);
